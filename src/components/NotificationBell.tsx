@@ -28,7 +28,7 @@ export function NotificationBell() {
             // Wait, api.ts logic says: if campus provided, filter by it OR global.
             // If user is GV, do they want to see campus news? Yes.
             // So let's always pass profile.campus if available.
-            const shouldFilterByCampus = !['ho'].includes(user.role); // HO sees all
+            const shouldFilterByCampus = !['ho'].includes(user.role || ''); // HO sees all
             const campusToFilter = shouldFilterByCampus ? profile?.campus : undefined;
 
             const data = await api.fetchNotifications(

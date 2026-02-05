@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
-import { Report } from '../types';
+import { type Report } from '../types';
 import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
-import { Loader2, Search, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Loader2, Search, CheckCircle, XCircle } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { ExportButton } from '../components/ExportButton';
 

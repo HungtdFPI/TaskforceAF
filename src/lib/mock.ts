@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { type Report } from '../types';
+// import { type Report } from '../types'; (unused)
 
 const MOCK_NAMES = [
     'Nguyễn Văn An', 'Trần Thị Bích', 'Lê Hoàng Cường', 'Phạm Minh Duy', 'Hoàng Thị E',
@@ -10,7 +10,7 @@ const MOCK_CLASSES = ['GDB01', 'GDB02', 'WEB01', 'WEB02'];
 const MOCK_SUBJECTS = ['Photoshop', 'Illustrator', 'Figma', 'ReactJS'];
 
 export async function generateMockData(lecturerId: string, campus: 'HN' | 'DN' | 'HCM' | 'CT') {
-    const reports = Array.from({ length: 5 }).map((_, i) => ({
+    const reports = Array.from({ length: 5 }).map((_) => ({
         lecturer_id: lecturerId,
         student_code: `SV2024${Math.floor(1000 + Math.random() * 9000)}`,
         student_name: MOCK_NAMES[Math.floor(Math.random() * MOCK_NAMES.length)],

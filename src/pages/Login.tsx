@@ -24,8 +24,8 @@ const loginSchema = z.object({
 
 const registerSchema = loginSchema.extend({
     fullName: z.string().min(2, { message: "Họ tên tối thiểu 2 ký tự" }),
-    campus: z.enum(['HN', 'DN', 'HCM', 'CT'], {
-        errorMap: () => ({ message: "Vui lòng chọn cơ sở" })
+    campus: z.enum(['HN', 'DN', 'HCM', 'CT'] as const, {
+        message: "Vui lòng chọn cơ sở"
     }),
 });
 
@@ -250,7 +250,7 @@ export default function LoginPage() {
                                                     className="pl-10 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all"
                                                 />
                                             </div>
-                                            {errors.fullName && <p className="text-sm text-red-500 font-medium">{errors.fullName.message}</p>}
+                                            {!!errors.fullName && <p className="text-sm text-red-500 font-medium">{errors.fullName.message as string}</p>}
                                         </div>
 
                                         <div className="space-y-2">
@@ -269,7 +269,7 @@ export default function LoginPage() {
                                                     <SelectItem value="CT">{CAMPUS_NAMES.CT}</SelectItem>
                                                 </SelectContent>
                                             </Select>
-                                            {errors.campus && <p className="text-sm text-red-500 font-medium">{errors.campus.message}</p>}
+                                            {!!errors.campus && <p className="text-sm text-red-500 font-medium">{errors.campus.message as string}</p>}
                                         </div>
                                     </>
                                 )}
@@ -286,7 +286,7 @@ export default function LoginPage() {
                                             className="pl-10 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all"
                                         />
                                     </div>
-                                    {errors.email && <p className="text-sm text-red-500 font-medium">{errors.email.message}</p>}
+                                    {!!errors.email && <p className="text-sm text-red-500 font-medium">{errors.email.message as string}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="password">Mật khẩu</Label>
@@ -299,7 +299,7 @@ export default function LoginPage() {
                                             className="pl-10 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all"
                                         />
                                     </div>
-                                    {errors.password && <p className="text-sm text-red-500 font-medium">{errors.password.message}</p>}
+                                    {!!errors.password && <p className="text-sm text-red-500 font-medium">{errors.password.message as string}</p>}
                                 </div>
 
                                 <Button

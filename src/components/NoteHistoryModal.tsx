@@ -26,7 +26,7 @@ export function NoteHistoryModal({
     studentName,
     type,
     title,
-    currentValue,
+    // currentValue, (unused)
     onSave
 }: NoteHistoryModalProps) {
     const { user, profile } = useAuth();

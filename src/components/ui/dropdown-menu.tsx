@@ -28,9 +28,10 @@ const DropdownMenuTrigger = React.forwardRef<
 
     if (asChild) {
         // Naive clone to inject onClick
-        const child = React.Children.only(children) as React.ReactElement;
+        const child = React.Children.only(children) as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
         return React.cloneElement(child, {
-            onClick: (e: any) => {
+            onClick: (e: React.MouseEvent<HTMLElement>) => {
+                // @ts-ignore
                 child.props.onClick?.(e);
                 setOpen(!open);
             }

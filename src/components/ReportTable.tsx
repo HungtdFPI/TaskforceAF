@@ -115,14 +115,7 @@ function EditableRow({ report, index, onUpdate, onSave, onDelete, readOnly }: {
         });
     };
 
-    const handleTextChange = (field: keyof typeof formData, value: string) => {
-        if (readOnly) return;
-        setFormData(prev => {
-            const newData = { ...prev, [field]: value };
-            setIsDirty(true);
-            return newData;
-        });
-    };
+    // handleTextChange removed (unused)
 
     const saveRow = async () => {
         if (!isDirty || readOnly) return;

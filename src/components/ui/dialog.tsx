@@ -2,31 +2,7 @@ import * as React from "react"
 import { X } from "lucide-react"
 import { cn } from "../../lib/utils"
 
-const Dialog = ({
-    open,
-    onOpenChange,
-    children,
-}: {
-    open?: boolean
-    onOpenChange?: (open: boolean) => void
-    children: React.ReactNode
-}) => {
-    if (!open) return null
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center sm:items-center">
-            {/* Overlay */}
-            <div
-                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity animate-in fade-in-0"
-                onClick={() => onOpenChange?.(false)}
-            />
-            {/* Content Positioner */}
-            <div className="z-50 w-full p-4 sm:p-0 flex justify-center">
-                {children}
-            </div>
-        </div>
-    )
-}
 
 const DialogContent = React.forwardRef<
     HTMLDivElement,

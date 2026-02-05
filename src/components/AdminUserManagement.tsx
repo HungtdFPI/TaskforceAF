@@ -46,15 +46,66 @@ export function AdminUserManagement() {
         fetchUsers();
     }, [contextDemoUsers]);
 
-    // ... (filteredUsers and stats calculation skip - unchanged)
+    // Derived State
+    const filteredUsers = users.filter(u => {
+        const matchesSearch = (u.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+            (u.email?.toLowerCase() || '').includes(searchQuery.toLowerCase());
+        const matchesCampus = filterCampus === 'all' || u.campus === filterCampus;
+        return matchesSearch && matchesCampus;
+    });
 
-    // ... (imports remain)
+    const stats = {
+        total: users.length,
+        byRole: {
+            gv: users.filter(u => u.role === 'gv').length,
+            cnbm: users.filter(u => u.role === 'cnbm').length,
+            truong_nganh: users.filter(u => u.role === 'truong_nganh').length,
+            ho: users.filter(u => u.role === 'ho').length,
+            dvsv: users.filter(u => u.role === 'dvsv').length,
+        },
+        byCampus: {
+            HN: users.filter(u => u.campus === 'HN').length,
+            DN: users.filter(u => u.campus === 'DN').length,
+            HCM: users.filter(u => u.campus === 'HCM').length,
+            CT: users.filter(u => u.campus === 'CT').length,
+        }
+    };
 
-    // ... (DEFAULT_DEMO_USERS skip - unchanged)
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            // Fetch from Supabase
+            const { data, error } = await supabase.from('profiles').select('*');
+            if (error) {
+                // Determine if we should use demo users
+                if (contextDemoUsers && Object.keys(contextDemoUsers).length > 0) {
+                    setUsers(Object.values(contextDemoUsers) as Profile[]);
+                } else {
+                    setUsers([]);
+                }
+            } else {
+                setUsers(data || []);
+            }
+        } catch (err) {
+            if (contextDemoUsers) setUsers(Object.values(contextDemoUsers) as Profile[]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // ... (fetchUsers and other logic skip - unchanged)
-
-    // ... (handleExport skip - unchanged)
+    const handleExport = () => {
+        const worksheet = XLSX.utils.json_to_sheet(filteredUsers.map(u => ({
+            'Họ Tên': u.full_name,
+            'Email': u.email,
+            'Vai trò': ROLE_NAMES[u.role],
+            'Cơ sở': CAMPUS_NAMES[u.campus],
+            'SĐT': u.phone,
+            'Bộ môn': u.unit
+        })));
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+        XLSX.writeFile(workbook, "Danh_sach_Nguoi_dung.xlsx");
+    };
 
     // Re-implementing to save token space in chat, but in real code keep logic
     const handleSaveUser = async () => {
@@ -96,7 +147,7 @@ export function AdminUserManagement() {
                             await registerDemoUser(email, fullName, campus, role);
                             // Also need to support saving extra fields for demo user in registry if possible, but registerDemoUser might be limited. 
                             // For now basic registry is enough, we will assume edit handles extra fields for demo.
-                            if (updatesForNewUser) {
+                            if (phone || unit) {
                                 // Ideally registerDemoUser should accept full profile object.
                                 // Since we can't change context signature easily here without seeing it, we'll auto-update if demo
                                 if (updateDemoUser) await updateDemoUser(email, { phone, unit });
