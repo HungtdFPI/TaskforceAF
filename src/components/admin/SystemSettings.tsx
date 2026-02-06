@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Plus, Trash2, Edit2, Save, Building2, Settings } from 'lucide-react';
+import { Trash2, Edit2, Save, Building2, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '../../lib/api';
 
@@ -27,7 +27,6 @@ export function SystemSettings() {
         warn_threshold: 3,
         enable_notifications: true
     });
-    const [loading, setLoading] = useState(true);
     const [isEditingCampus, setIsEditingCampus] = useState<Campus | null>(null);
     const [newCampus, setNewCampus] = useState<Campus>({ id: '', name: '', code: '' });
 
@@ -36,7 +35,6 @@ export function SystemSettings() {
     }, []);
 
     const loadData = async () => {
-        setLoading(true);
         try {
             const [campusData, settingsData] = await Promise.all([
                 api.fetchCampuses(),
@@ -47,8 +45,6 @@ export function SystemSettings() {
         } catch (error) {
             console.error(error);
             toast.error('Lỗi tải dữ liệu hệ thống');
-        } finally {
-            setLoading(false);
         }
     };
 

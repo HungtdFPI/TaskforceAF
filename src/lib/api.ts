@@ -409,7 +409,7 @@ export const api = {
     },
 
     // System Management Methods
-    async fetchCampuses(isGuest: boolean = true): Promise<any[]> {
+    async fetchCampuses(): Promise<any[]> {
         // Always usage local storage for now as requested
         const stored = localStorage.getItem(CAMPUS_KEY);
         if (stored) return JSON.parse(stored);
