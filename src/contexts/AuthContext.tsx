@@ -14,6 +14,12 @@ export interface Profile {
     avatar_url?: string;
     phone?: string;
     unit?: string;
+
+    // Enhanced Fields
+    employee_code?: string;
+    position?: string;
+    permissions?: string[]; // ['manage_users', 'view_all_campuses', 'approve_reports', 'config_system']
+    status?: 'active' | 'inactive';
 }
 
 interface AuthContextType {
@@ -162,7 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Default demo users if local storage is empty
             return {
-                'admin@fpt.edu.vn': { id: 'demo-admin@fpt.edu.vn', email: 'admin@fpt.edu.vn', full_name: 'Trưởng Ngành (Admin)', role: 'truong_nganh', campus: 'HN' },
+                'admin@fpt.edu.vn': { id: 'demo-admin@fpt.edu.vn', email: 'admin@fpt.edu.vn', full_name: 'Trưởng Ngành (Admin)', role: 'truong_nganh', campus: 'DN' },
                 'gv_hn@fpt.edu.vn': { id: 'demo-gv_hn@fpt.edu.vn', email: 'gv_hn@fpt.edu.vn', full_name: 'Giảng Viên (HN)', role: 'gv', campus: 'HN' },
                 'cnbm_hn@fpt.edu.vn': { id: 'demo-cnbm_hn@fpt.edu.vn', email: 'cnbm_hn@fpt.edu.vn', full_name: 'Chủ Nhiệm Bộ Môn (HN)', role: 'cnbm', campus: 'HN' }
             };
@@ -229,7 +235,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (prefix === 'admin') {
                 role = 'truong_nganh';
                 fullName = 'Trưởng Ngành (Admin)';
-                campus = 'HN';
+                campus = 'DN';
             } else {
                 const parts = prefix.split('_');
                 if (parts.length >= 2) {

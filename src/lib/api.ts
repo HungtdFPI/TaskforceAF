@@ -3,6 +3,8 @@ import { type Report } from '../types';
 
 const STORAGE_KEY = 'mock_reports';
 const CHAT_KEY = 'mock_chat_messages';
+const CAMPUS_KEY = 'mock_campuses';
+const SETTINGS_KEY = 'mock_settings';
 
 export interface Message {
     id: string;
@@ -404,5 +406,60 @@ export const api = {
             return;
         }
         // Supabase implementation omitted for brevity, adding valid stub
+    },
+
+    // System Management Methods
+    async fetchCampuses(isGuest: boolean = true): Promise<any[]> {
+        // Always usage local storage for now as requested
+        const stored = localStorage.getItem(CAMPUS_KEY);
+        if (stored) return JSON.parse(stored);
+
+        // Default Campuses if empty
+        const defaults = [
+            { id: 'HN', name: 'Hà Nội', code: 'HN' },
+            { id: 'DN', name: 'Đà Nẵng', code: 'DN' },
+            { id: 'HCM', name: 'Hồ Chí Minh', code: 'HCM' },
+            { id: 'TN', name: 'Tây Nguyên', code: 'TN' },
+            { id: 'CT', name: 'Cần Thơ', code: 'CT' }
+        ];
+        localStorage.setItem(CAMPUS_KEY, JSON.stringify(defaults));
+        return defaults;
+    },
+
+    async updateCampus(campus: any): Promise<void> {
+        const stored = localStorage.getItem(CAMPUS_KEY);
+        const campuses = stored ? JSON.parse(stored) : [];
+        if (campus.id) {
+            const index = campuses.findIndex((c: any) => c.id === campus.id);
+            if (index !== -1) campuses[index] = campus;
+        } else {
+            campuses.push({ ...campus, id: `camp-${Date.now()}` });
+        }
+        localStorage.setItem(CAMPUS_KEY, JSON.stringify(campuses));
+    },
+
+    async deleteCampus(id: string): Promise<void> {
+        const stored = localStorage.getItem(CAMPUS_KEY);
+        if (!stored) return;
+        const campuses = JSON.parse(stored);
+        const filtered = campuses.filter((c: any) => c.id !== id);
+        localStorage.setItem(CAMPUS_KEY, JSON.stringify(filtered));
+    },
+
+    async fetchSettings(): Promise<any> {
+        const stored = localStorage.getItem(SETTINGS_KEY);
+        if (stored) return JSON.parse(stored);
+
+        const defaults = {
+            current_semester: 'Summer 2024',
+            warn_threshold: 3,
+            enable_notifications: true
+        };
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaults));
+        return defaults;
+    },
+
+    async updateSettings(settings: any): Promise<void> {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     }
 };

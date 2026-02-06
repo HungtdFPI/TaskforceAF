@@ -16,8 +16,13 @@ import { motion } from 'framer-motion';
 import { CAMPUS_NAMES, type CampusCode } from '../types';
 
 const loginSchema = z.object({
-    email: z.string().email().refine(val => val.endsWith('@fpt.edu.vn'), {
-        message: "Vui lòng sử dụng email @fpt.edu.vn",
+    email: z.string().min(3, "Tên đăng nhập không hợp lệ").refine(val => {
+        // Allow if it's a valid email ending in fpt.edu.vn OR just a username (no @)
+        const isEmail = val.includes('@');
+        if (isEmail) return val.endsWith('@fpt.edu.vn');
+        return true; // Use non-email strings as usernames
+    }, {
+        message: "Vui lòng sử dụng email @fpt.edu.vn hoặc tên đăng nhập",
     }),
     password: z.string().min(6, { message: "Mật khẩu tối thiểu 6 ký tự" }),
 });
@@ -58,12 +63,20 @@ export default function LoginPage() {
     const onLogin = async (data: LoginForm) => {
         setLoading(true);
         try {
-            // Check for Demo Account
-            if ((data.email.includes('demo') || data.email.endsWith('@fpt.edu.vn')) && loginAsDemo) {
-                const isDemoAccount = ['gv_hn@fpt.edu.vn', 'cnbm_hn@fpt.edu.vn', 'admin@fpt.edu.vn', 'dvsv_hn@fpt.edu.vn'].includes(data.email);
+            // Auto-append domain if entering username only
+            let loginId = data.email.trim();
+            if (!loginId.includes('@')) {
+                loginId = `${loginId}@fpt.edu.vn`;
+            }
 
-                if (isDemoAccount) {
-                    await loginAsDemo(data.email);
+            // Check for Demo Account
+            if ((loginId.includes('demo') || loginId.endsWith('@fpt.edu.vn')) && loginAsDemo) {
+                const isDemoAccount = ['gv_hn@fpt.edu.vn', 'cnbm_hn@fpt.edu.vn', 'admin@fpt.edu.vn', 'dvsv_hn@fpt.edu.vn'].includes(loginId)
+                    || loginId.startsWith('admin'); // Allow variations like admin -> admin@fpt.edu.vn
+
+                // We'll proceed with try login to demo if it matches pattern or is explicit demo
+                if (isDemoAccount || loginId.includes('demo')) {
+                    await loginAsDemo(loginId);
                     toast.success('Đăng nhập Demo thành công');
                     navigate('/');
                     return;
@@ -72,18 +85,18 @@ export default function LoginPage() {
 
             // Real Supabase Login
             const { error } = await supabase.auth.signInWithPassword({
-                email: data.email,
+                email: loginId,
                 password: data.password,
             });
 
             if (error) {
                 if (loginAsDemo) {
-                    await loginAsDemo(data.email);
+                    await loginAsDemo(loginId);
                     toast.success('Đăng nhập (Mô phỏng) thành công');
                     navigate('/');
                     return;
                 }
-                toast.error('Đăng nhập thất bại', { description: "Vui lòng kiểm tra lại email hoặc mật khẩu." });
+                toast.error('Đăng nhập thất bại', { description: "Vui lòng kiểm tra lại thông tin đăng nhập." });
             } else {
                 toast.success('Đăng nhập thành công');
                 navigate('/');
@@ -275,13 +288,13 @@ export default function LoginPage() {
                                 )}
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">Email FPT</Label>
+                                    <Label htmlFor="email">Tên đăng nhập / Email FPT</Label>
                                     <div className="relative">
                                         <UserCircle className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
                                         <Input
                                             id="email"
-                                            type="email"
-                                            placeholder="giangvien@fpt.edu.vn"
+                                            type="text"
+                                            placeholder="username hoặc email@fpt.edu.vn"
                                             {...register('email')}
                                             className="pl-10 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all"
                                         />
@@ -331,7 +344,7 @@ export default function LoginPage() {
                                     <div className="grid grid-cols-2 gap-2 mb-2">
                                         <div className="px-2 py-1 bg-white border rounded text-[10px] text-center cursor-pointer hover:bg-slate-50" onClick={() => navigator.clipboard.writeText('gv_hn@fpt.edu.vn')}>Giảng viên (gv_hn@fpt.edu.vn)</div>
                                         <div className="px-2 py-1 bg-white border rounded text-[10px] text-center cursor-pointer hover:bg-slate-50" onClick={() => navigator.clipboard.writeText('cnbm_hn@fpt.edu.vn')}>CNBM (cnbm_hn@fpt.edu.vn)</div>
-                                        <div className="px-2 py-1 bg-white border rounded text-[10px] text-center cursor-pointer hover:bg-slate-50" onClick={() => navigator.clipboard.writeText('admin@fpt.edu.vn')}>Admin (admin@fpt.edu.vn)</div>
+                                        <div className="px-2 py-1 bg-white border rounded text-[10px] text-center cursor-pointer hover:bg-slate-50" onClick={() => setValue('email', 'admin')}>Admin (admin)</div>
                                         <div className="px-2 py-1 bg-white border rounded text-[10px] text-center cursor-pointer hover:bg-slate-50" onClick={() => navigator.clipboard.writeText('dvsv_hn@fpt.edu.vn')}>DVSV (dvsv_hn@fpt.edu.vn)</div>
                                     </div>
 
