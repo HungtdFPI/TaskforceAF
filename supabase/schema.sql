@@ -15,7 +15,11 @@ create table public.profiles (
   full_name text,
   role user_role default 'gv',
   campus campus_code default 'HN',
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  employee_code text,
+  position text,
+  status text default 'active',
+  permissions text[]
 );
 
 -- Create Reports Table
