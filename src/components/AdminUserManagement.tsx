@@ -328,7 +328,7 @@ export function AdminUserManagement() {
                             <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider border-b pb-1 mb-2">Thông tin cơ bản</h3>
                             <div className="space-y-2">
                                 <Label>Email <span className="text-red-500">*</span></Label>
-                                <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@fpt.edu.vn" disabled={!!editingUser} />
+                                <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@fpt.edu.vn" />
                             </div>
                             <div className="space-y-2">
                                 <Label>Họ và Tên <span className="text-red-500">*</span></Label>
